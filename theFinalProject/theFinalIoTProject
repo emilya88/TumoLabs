@@ -258,5 +258,5 @@ void loop() {
     http.end();
   }
 
-  delay(600000);
+  delay(600000); // every 10 minutes
 }
