@@ -31,7 +31,7 @@ def lambda_handler(event, context):
         data["timestamp"] = datetime.now(tz_plus_4).isoformat()
 
         # ---------------------------------------
-        # 2. Load existing file from S3 (if exists)
+        # 2. Load existing file from S3 
         # ---------------------------------------
         try:
             response = s3.get_object(Bucket=BUCKET_NAME, Key=FILE_KEY)
