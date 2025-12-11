@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Data Visualization - Emilya Karapetyan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">EK</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="cv.html">CV</a></li>
+                <li><a href="graphs.html" class="active">Graphs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <header class="page-header fade-in">
+                <h1>IoT Sensor Data Visualization</h1>
+                <p class="subtitle">Environmental monitoring data from my IoT project</p>
+            </header>
+
+            <!-- Project Info Card -->
+            <section class="card project-info fade-in">
+                <h2>About This IoT Project</h2>
+                <p>
+                    Using an ESP32 microcontroller, various environmental sensors, and Amazon cloud services, 
+                    we built a system capable of reading real-time air-quality parameters, transmitting data wirelessly, 
+                    and storing it for later analysis and visualization.
+                </p>
+                <p>
+                    The context of the project is strongly linked to the increasing concern regarding Armenia's air quality, 
+                    where pollution levels have become a noticeable health and environmental issue. This provided both 
+                    motivation and real-world relevance to the technical work.
+                </p>
+                <div class="project-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Device</span>
+                        <span class="detail-value">ESP32_01</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Data Points</span>
+                        <span class="detail-value" id="dataPoints">Loading...</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Date Range</span>
+                        <span class="detail-value" id="dateRange">Loading...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Temperature Chart -->
+            <section class="card chart-container fade-in">
+                <h2>Temperature Over Time</h2>
+                <p class="chart-description">Temperature readings in degrees Celsius (°C)</p>
+                <div class="chart-wrapper">
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Pressure Chart -->
+            <section class="card chart-container fade-in">
+                <h2>Pressure Over Time</h2>
+                <p class="chart-description">Atmospheric pressure readings in hectopascals (hPa)</p>
+                <div class="chart-wrapper">
+                    <canvas id="pressureChart"></canvas>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Emilya Karapetyan. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // IoT Sensor Data - Replace DATA_PLACEHOLDER with content from data_1.json
+       const sensorData = [
+  {
+    "timestamp": "2025-12-05T11:37:06.262534",
+    "temperature": 24.15,
+    "pressure": 904.02
+  },
+  {
+    "timestamp": "2025-12-05T11:37:38.004651",
+    "temperature": 24.17,
+    "pressure": 904.06
+  },
+  {
+    "timestamp": "2025-12-05T11:39:06.816952",
+    "temperature": 24.42,
+    "pressure": 904.06
+  },
+  {
+    "timestamp": "2025-12-05T11:39:38.658312",
+    "temperature": 24.34,
+    "pressure": 904.06
+  },
+  {
+    "timestamp": "2025-12-05T11:40:10.351629",
+    "temperature": 24.38,
+    "pressure": 904.04
+  },
+  {
+    "timestamp": "2025-12-05T11:40:41.983399",
+    "temperature": 24.35,
+    "pressure": 904.07
+  },
+  {
+    "timestamp": "2025-12-05T11:41:13.976105",
+    "temperature": 24.3,
+    "pressure": 904.03
+  },
+  {
+    "timestamp": "2025-12-05T11:41:45.739803",
+    "temperature": 24.29,
+    "pressure": 904.04
+  },
+  {
+    "timestamp": "2025-12-05T11:42:17.775924",
+    "temperature": 24.33,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T11:42:49.664585",
+    "temperature": 24.49,
+    "pressure": 904.06
+  },
+  {
+    "timestamp": "2025-12-05T11:43:21.392982",
+    "temperature": 24.54,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T11:43:53.174810",
+    "temperature": 24.53,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T11:44:25.556222",
+    "temperature": 24.44,
+    "pressure": 904.07
+  },
+  {
+    "timestamp": "2025-12-05T11:44:57.206353",
+    "temperature": 24.23,
+    "pressure": 904.07
+  },
+  {
+    "timestamp": "2025-12-05T11:45:29.255084",
+    "temperature": 24.22,
+    "pressure": 904.03
+  },
+  {
+    "timestamp": "2025-12-05T11:46:01.285071",
+    "temperature": 24.16,
+    "pressure": 904.04
+  },
+  {
+    "timestamp": "2025-12-05T11:46:34.974956",
+    "temperature": 24.14,
+    "pressure": 904.02
+  },
+  {
+    "timestamp": "2025-12-05T11:47:07.520453",
+    "temperature": 24.15,
+    "pressure": 904.06
+  },
+  {
+    "timestamp": "2025-12-05T11:47:39.257261",
+    "temperature": 24.14,
+    "pressure": 904.03
+  },
+  {
+    "timestamp": "2025-12-05T11:48:10.959965",
+    "temperature": 24.12,
+    "pressure": 904.06
+  },
+  {
+    "timestamp": "2025-12-05T11:48:43.169787",
+    "temperature": 24.13,
+    "pressure": 904.05
+  },
+  {
+    "timestamp": "2025-12-05T11:49:15.008137",
+    "temperature": 24.13,
+    "pressure": 904.04
+  },
+  {
+    "timestamp": "2025-12-05T11:49:47.665323",
+    "temperature": 24.17,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T11:50:19.434225",
+    "temperature": 24.15,
+    "pressure": 904.07
+  },
+  {
+    "timestamp": "2025-12-05T11:50:51.430971",
+    "temperature": 24.12,
+    "pressure": 904.05
+  },
+  {
+    "timestamp": "2025-12-05T11:51:23.444837",
+    "temperature": 24.08,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T11:51:56.307663",
+    "temperature": 24.09,
+    "pressure": 904.1
+  },
+  {
+    "timestamp": "2025-12-05T11:52:28.353762",
+    "temperature": 24.19,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T11:53:00.775177",
+    "temperature": 24.19,
+    "pressure": 904.1
+  },
+  {
+    "timestamp": "2025-12-05T11:53:32.593360",
+    "temperature": 24.18,
+    "pressure": 904.12
+  },
+  {
+    "timestamp": "2025-12-05T11:54:05.458238",
+    "temperature": 24.17,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T11:54:37.274367",
+    "temperature": 24.15,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T11:55:09.653320",
+    "temperature": 24.22,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T11:55:41.576031",
+    "temperature": 24.25,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T11:56:14.328121",
+    "temperature": 24.3,
+    "pressure": 904.1
+  },
+  {
+    "timestamp": "2025-12-05T11:56:46.488957",
+    "temperature": 24.37,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T11:57:19.446404",
+    "temperature": 24.36,
+    "pressure": 904.12
+  },
+  {
+    "timestamp": "2025-12-05T11:57:51.502516",
+    "temperature": 24.34,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T11:58:23.271900",
+    "temperature": 24.28,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T11:58:55.203989",
+    "temperature": 24.32,
+    "pressure": 904.1
+  },
+  {
+    "timestamp": "2025-12-05T12:00:17.326561",
+    "temperature": 24.31,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:00:23.912815",
+    "temperature": 24.38,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:00:30.973172",
+    "temperature": 24.39,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:00:37.840141",
+    "temperature": 24.42,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:00:44.268577",
+    "temperature": 24.4,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:00:50.942006",
+    "temperature": 24.4,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T12:00:57.625992",
+    "temperature": 24.37,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T12:01:04.182522",
+    "temperature": 24.34,
+    "pressure": 904.07
+  },
+  {
+    "timestamp": "2025-12-05T12:01:10.618607",
+    "temperature": 24.34,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T12:01:18.048923",
+    "temperature": 24.34,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T12:01:24.640119",
+    "temperature": 24.3,
+    "pressure": 904.07
+  },
+  {
+    "timestamp": "2025-12-05T12:01:32.375431",
+    "temperature": 24.29,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T12:01:40.222388",
+    "temperature": 24.27,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T12:01:47.252691",
+    "temperature": 24.25,
+    "pressure": 904.07
+  },
+  {
+    "timestamp": "2025-12-05T12:01:54.358206",
+    "temperature": 24.23,
+    "pressure": 904.1
+  },
+  {
+    "timestamp": "2025-12-05T12:02:01.205108",
+    "temperature": 24.22,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T12:02:07.817920",
+    "temperature": 24.19,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T12:02:14.363033",
+    "temperature": 24.16,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:02:20.819995",
+    "temperature": 24.14,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T12:02:27.363228",
+    "temperature": 24.14,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:02:34.433127",
+    "temperature": 24.13,
+    "pressure": 904.12
+  },
+  {
+    "timestamp": "2025-12-05T12:02:40.924944",
+    "temperature": 24.13,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:02:47.752563",
+    "temperature": 24.14,
+    "pressure": 904.12
+  },
+  {
+    "timestamp": "2025-12-05T12:02:54.130348",
+    "temperature": 24.12,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T12:03:00.696174",
+    "temperature": 24.09,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:03:07.307291",
+    "temperature": 24.07,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:03:13.792548",
+    "temperature": 24.07,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:03:20.611386",
+    "temperature": 24.07,
+    "pressure": 904.1
+  },
+  {
+    "timestamp": "2025-12-05T12:03:27.114954",
+    "temperature": 24.09,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T12:03:33.778332",
+    "temperature": 24.1,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T12:03:41.132088",
+    "temperature": 24.13,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T12:03:48.055800",
+    "temperature": 24.15,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:03:54.762096",
+    "temperature": 24.18,
+    "pressure": 904.07
+  },
+  {
+    "timestamp": "2025-12-05T12:04:01.374127",
+    "temperature": 24.2,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T12:04:07.779547",
+    "temperature": 24.22,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T12:04:14.341505",
+    "temperature": 24.21,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:04:20.924358",
+    "temperature": 24.21,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T12:04:27.338078",
+    "temperature": 24.21,
+    "pressure": 904.12
+  },
+  {
+    "timestamp": "2025-12-05T12:04:33.925585",
+    "temperature": 24.21,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:04:40.436404",
+    "temperature": 24.22,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T12:04:47.138433",
+    "temperature": 24.2,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T12:04:54.309973",
+    "temperature": 24.22,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T12:05:00.928834",
+    "temperature": 24.19,
+    "pressure": 904.1
+  },
+  {
+    "timestamp": "2025-12-05T12:05:07.430009",
+    "temperature": 24.17,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T12:05:14.138660",
+    "temperature": 24.14,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T12:05:20.861899",
+    "temperature": 24.1,
+    "pressure": 904.12
+  },
+  {
+    "timestamp": "2025-12-05T12:05:27.450820",
+    "temperature": 24.03,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:05:34.096612",
+    "temperature": 24.03,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T12:05:40.923010",
+    "temperature": 24.01,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T12:05:47.294906",
+    "temperature": 23.97,
+    "pressure": 904.14
+  },
+  {
+    "timestamp": "2025-12-05T12:05:54.358318",
+    "temperature": 24.04,
+    "pressure": 904.08
+  },
+  {
+    "timestamp": "2025-12-05T12:06:01.084073",
+    "temperature": 24.14,
+    "pressure": 904.1
+  },
+  {
+    "timestamp": "2025-12-05T12:06:07.539089",
+    "temperature": 24.17,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T12:06:14.350436",
+    "temperature": 24.18,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T12:06:21.449217",
+    "temperature": 24.19,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T12:06:27.805606",
+    "temperature": 24.19,
+    "pressure": 904.15
+  },
+  {
+    "timestamp": "2025-12-05T12:06:34.318067",
+    "temperature": 24.27,
+    "pressure": 904.09
+  },
+  {
+    "timestamp": "2025-12-05T12:06:41.420116",
+    "temperature": 24.8,
+    "pressure": 904.16
+  },
+  {
+    "timestamp": "2025-12-05T12:06:49.121960",
+    "temperature": 24.85,
+    "pressure": 904.14
+  },
+  {
+    "timestamp": "2025-12-05T12:06:57.295911",
+    "temperature": 25.06,
+    "pressure": 904.18
+  },
+   {
+    "timestamp": "2025-12-05T12:07:04.154649",
+    "temperature": 25.37,
+    "pressure": 904.17
+  },
+  {
+    "timestamp": "2025-12-05T12:07:10.829653",
+    "temperature": 25.58,
+    "pressure": 904.15
+  },
+  {
+    "timestamp": "2025-12-05T12:07:18.608442",
+    "temperature": 25.61,
+    "pressure": 904.06
+  },
+  {
+    "timestamp": "2025-12-05T12:07:25.777367",
+    "temperature": 25.68,
+    "pressure": 904.1
+  },
+  {
+    "timestamp": "2025-12-05T12:07:32.554436",
+    "temperature": 25.93,
+    "pressure": 904.23
+  },
+  {
+    "timestamp": "2025-12-05T12:07:40.293886",
+    "temperature": 26.08,
+    "pressure": 904.22
+  },
+  {
+    "timestamp": "2025-12-05T12:07:47.192680",
+    "temperature": 25.86,
+    "pressure": 904.18
+  },
+  {
+    "timestamp": "2025-12-05T12:07:54.159763",
+    "temperature": 25.75,
+    "pressure": 904.18
+  },
+  {
+    "timestamp": "2025-12-05T12:08:01.035054",
+    "temperature": 25.61,
+    "pressure": 904.14
+  },
+  {
+    "timestamp": "2025-12-05T12:08:07.929319",
+    "temperature": 25.49,
+    "pressure": 904.15
+  },
+  {
+    "timestamp": "2025-12-05T12:08:14.702348",
+    "temperature": 25.36,
+    "pressure": 904.14
+  },
+  {
+    "timestamp": "2025-12-05T12:08:23.969224",
+    "temperature": 25.24,
+    "pressure": 904.14
+  },
+  {
+    "timestamp": "2025-12-05T12:08:31.904441",
+    "temperature": 26.05,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:08:39.756403",
+    "temperature": 25.87,
+    "pressure": 904.18
+  },
+  {
+    "timestamp": "2025-12-05T12:08:47.378848",
+    "temperature": 26.66,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:08:54.133098",
+    "temperature": 26.82,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T12:09:00.686267",
+    "temperature": 26.9,
+    "pressure": 904.05
+  },
+  {
+    "timestamp": "2025-12-05T12:09:07.447076",
+    "temperature": 26.76,
+    "pressure": 904.21
+  },
+  {
+    "timestamp": "2025-12-05T12:09:13.843990",
+    "temperature": 26.67,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T12:09:20.753803",
+    "temperature": 26.46,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T12:09:27.514437",
+    "temperature": 26.78,
+    "pressure": 903.93
+  },
+  {
+    "timestamp": "2025-12-05T12:09:34.390753",
+    "temperature": 26.73,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T12:09:41.131988",
+    "temperature": 26.43,
+    "pressure": 904.29
+  },
+  {
+    "timestamp": "2025-12-05T12:09:49.455004",
+    "temperature": 26.22,
+    "pressure": 904.24
+  },
+  {
+    "timestamp": "2025-12-05T12:09:57.133993",
+    "temperature": 26.0,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:14:26.998501",
+    "temperature": 24.18,
+    "pressure": 904.17
+  },
+  {
+    "timestamp": "2025-12-05T12:14:33.606374",
+    "temperature": 24.19,
+    "pressure": 904.18
+  },
+  {
+    "timestamp": "2025-12-05T12:14:40.085745",
+    "temperature": 24.21,
+    "pressure": 904.14
+  },
+  {
+    "timestamp": "2025-12-05T12:14:46.533319",
+    "temperature": 24.23,
+    "pressure": 904.18
+  },
+  {
+    "timestamp": "2025-12-05T12:14:53.044292",
+    "temperature": 24.28,
+    "pressure": 904.21
+  },
+  {
+    "timestamp": "2025-12-05T12:14:59.597797",
+    "temperature": 24.32,
+    "pressure": 904.19
+  },
+  {
+    "timestamp": "2025-12-05T12:15:06.148086",
+    "temperature": 24.35,
+    "pressure": 904.18
+  },
+  {
+    "timestamp": "2025-12-05T12:15:12.643815",
+    "temperature": 24.37,
+    "pressure": 904.19
+  },
+  {
+    "timestamp": "2025-12-05T12:15:19.098627",
+    "temperature": 24.38,
+    "pressure": 904.22
+  },
+  {
+    "timestamp": "2025-12-05T12:15:25.808367",
+    "temperature": 24.4,
+    "pressure": 904.18
+  },
+  {
+    "timestamp": "2025-12-05T12:15:32.516420",
+    "temperature": 24.41,
+    "pressure": 904.18
+  },
+  {
+    "timestamp": "2025-12-05T12:15:39.032390",
+    "temperature": 24.37,
+    "pressure": 904.16
+  },
+  {
+    "timestamp": "2025-12-05T12:15:45.579060",
+    "temperature": 24.33,
+    "pressure": 904.22
+  },
+  {
+    "timestamp": "2025-12-05T12:15:52.230129",
+    "temperature": 24.32,
+    "pressure": 904.19
+  },
+  {
+    "timestamp": "2025-12-05T12:15:58.774934",
+    "temperature": 24.31,
+    "pressure": 904.17
+  },
+  {
+    "timestamp": "2025-12-05T12:16:05.336263",
+    "temperature": 24.27,
+    "pressure": 904.16
+  },
+  {
+    "timestamp": "2025-12-05T12:16:12.425123",
+    "temperature": 24.26,
+    "pressure": 904.15
+  },
+  {
+    "timestamp": "2025-12-05T12:16:19.094336",
+    "temperature": 24.3,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T12:16:25.611044",
+    "temperature": 24.32,
+    "pressure": 904.16
+  },
+  {
+    "timestamp": "2025-12-05T12:16:32.797733",
+    "temperature": 24.38,
+    "pressure": 904.17
+  },
+  {
+    "timestamp": "2025-12-05T12:16:39.334968",
+    "temperature": 24.44,
+    "pressure": 904.16
+  },
+  {
+    "timestamp": "2025-12-05T12:16:46.872113",
+    "temperature": 24.49,
+    "pressure": 904.2
+  },
+  {
+    "timestamp": "2025-12-05T12:16:53.465895",
+    "temperature": 24.49,
+    "pressure": 904.21
+  },
+  {
+    "timestamp": "2025-12-05T12:17:00.029107",
+    "temperature": 24.51,
+    "pressure": 904.21
+  },
+  {
+    "timestamp": "2025-12-05T12:17:06.675647",
+    "temperature": 24.55,
+    "pressure": 904.19
+  },
+  {
+    "timestamp": "2025-12-05T12:17:13.272239",
+    "temperature": 24.57,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:17:19.988362",
+    "temperature": 24.59,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:17:26.445332",
+    "temperature": 24.61,
+    "pressure": 904.27
+  },
+  {
+    "timestamp": "2025-12-05T12:17:33.181747",
+    "temperature": 24.63,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:17:39.745550",
+    "temperature": 24.66,
+    "pressure": 904.21
+  },
+  {
+    "timestamp": "2025-12-05T12:17:46.516037",
+    "temperature": 24.69,
+    "pressure": 904.22
+  },
+  {
+    "timestamp": "2025-12-05T12:17:52.994593",
+    "temperature": 24.72,
+    "pressure": 904.24
+  },
+  {
+    "timestamp": "2025-12-05T12:17:59.690823",
+    "temperature": 24.75,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:18:06.195614",
+    "temperature": 24.79,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:18:13.067621",
+    "temperature": 24.8,
+    "pressure": 904.22
+  },
+  {
+    "timestamp": "2025-12-05T12:18:20.207135",
+    "temperature": 24.83,
+    "pressure": 904.23
+  },
+  {
+    "timestamp": "2025-12-05T12:18:27.389165",
+    "temperature": 24.85,
+    "pressure": 904.27
+  },
+  {
+    "timestamp": "2025-12-05T12:18:34.494092",
+    "temperature": 24.88,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T12:18:42.125115",
+    "temperature": 24.89,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:18:49.278444",
+    "temperature": 24.92,
+    "pressure": 904.22
+  },
+  {
+    "timestamp": "2025-12-05T12:18:56.354346",
+    "temperature": 24.94,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T12:19:03.304501",
+    "temperature": 24.98,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:19:09.986222",
+    "temperature": 24.99,
+    "pressure": 904.24
+  },
+  {
+    "timestamp": "2025-12-05T12:19:16.781268",
+    "temperature": 24.99,
+    "pressure": 904.24
+  },
+  {
+    "timestamp": "2025-12-05T12:19:23.513301",
+    "temperature": 25.0,
+    "pressure": 904.28
+  },
+  {
+    "timestamp": "2025-12-05T12:19:30.041493",
+    "temperature": 25.0,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:19:37.028355",
+    "temperature": 25.01,
+    "pressure": 904.23
+  },
+  {
+    "timestamp": "2025-12-05T12:19:43.825254",
+    "temperature": 25.03,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:19:50.694003",
+    "temperature": 25.03,
+    "pressure": 904.24
+  },
+  {
+    "timestamp": "2025-12-05T12:19:57.271321",
+    "temperature": 25.0,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T12:20:03.736702",
+    "temperature": 24.94,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T12:20:10.485988",
+    "temperature": 24.9,
+    "pressure": 904.23
+  },
+  {
+    "timestamp": "2025-12-05T12:20:17.208931",
+    "temperature": 24.89,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T16:20:24.987991+04:00",
+    "temperature": 24.92,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T16:20:31.824128+04:00",
+    "temperature": 24.91,
+    "pressure": 904.24
+  },
+  {
+    "timestamp": "2025-12-05T16:20:38.640824+04:00",
+    "temperature": 25.0,
+    "pressure": 904.29
+  },
+  {
+    "timestamp": "2025-12-05T16:20:45.204370+04:00",
+    "temperature": 25.05,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T16:20:51.854042+04:00",
+    "temperature": 25.07,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T16:20:58.353079+04:00",
+    "temperature": 25.08,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T16:21:05.175341+04:00",
+    "temperature": 25.11,
+    "pressure": 904.27
+  },
+  {
+    "timestamp": "2025-12-05T16:21:12.336908+04:00",
+    "temperature": 25.16,
+    "pressure": 904.28
+  },
+  {
+    "timestamp": "2025-12-05T16:21:18.884093+04:00",
+    "temperature": 25.21,
+    "pressure": 904.27
+  },
+  {
+    "timestamp": "2025-12-05T16:21:25.851694+04:00",
+    "temperature": 25.25,
+    "pressure": 904.31
+  },
+  {
+    "timestamp": "2025-12-05T16:21:32.502711+04:00",
+    "temperature": 25.3,
+    "pressure": 904.29
+  },
+  {
+    "timestamp": "2025-12-05T16:21:39.364197+04:00",
+    "temperature": 25.36,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T16:21:46.019032+04:00",
+    "temperature": 25.38,
+    "pressure": 904.27
+  },
+  {
+    "timestamp": "2025-12-05T16:21:52.575406+04:00",
+    "temperature": 25.4,
+    "pressure": 904.28
+  },
+  {
+    "timestamp": "2025-12-05T16:21:59.086192+04:00",
+    "temperature": 25.41,
+    "pressure": 904.29
+  },
+  {
+    "timestamp": "2025-12-05T16:22:05.740456+04:00",
+    "temperature": 25.46,
+    "pressure": 904.27
+  },
+  {
+    "timestamp": "2025-12-05T16:22:12.649115+04:00",
+    "temperature": 25.5,
+    "pressure": 904.28
+  },
+  {
+    "timestamp": "2025-12-05T16:22:19.711852+04:00",
+    "temperature": 25.56,
+    "pressure": 904.29
+  },
+  {
+    "timestamp": "2025-12-05T16:22:26.370908+04:00",
+    "temperature": 25.59,
+    "pressure": 904.24
+  },
+  {
+    "timestamp": "2025-12-05T16:22:33.335272+04:00",
+    "temperature": 25.62,
+    "pressure": 904.27
+  },
+  {
+    "timestamp": "2025-12-05T16:22:40.515847+04:00",
+    "temperature": 25.62,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T16:22:47.256061+04:00",
+    "temperature": 25.63,
+    "pressure": 904.25
+  },
+  {
+    "timestamp": "2025-12-05T16:22:53.876064+04:00",
+    "temperature": 25.64,
+    "pressure": 904.23
+  },
+  {
+    "timestamp": "2025-12-05T16:24:19.634890+04:00",
+    "temperature": 25.75,
+    "pressure": 904.26
+  },
+  {
+    "timestamp": "2025-12-05T16:34:23.003570+04:00",
+    "temperature": 27.04,
+    "pressure": 904.39
+  },
+  {
+    "timestamp": "2025-12-05T16:44:25.835181+04:00",
+    "temperature": 26.45,
+    "pressure": 904.32
+  },
+  {
+    "timestamp": "2025-12-05T16:54:28.267455+04:00",
+    "temperature": 26.07,
+    "pressure": 904.39
+  },
+  {
+    "timestamp": "2025-12-05T17:04:30.842290+04:00",
+    "temperature": 25.84,
+    "pressure": 904.38
+  },
+  {
+    "timestamp": "2025-12-05T17:14:33.441670+04:00",
+    "temperature": 18.06,
+    "pressure": 904.1
+  },
+  {
+    "timestamp": "2025-12-05T17:24:35.966058+04:00",
+    "temperature": 13.23,
+    "pressure": 904.16
+  },
+  {
+    "timestamp": "2025-12-05T17:34:38.554602+04:00",
+    "temperature": 11.02,
+    "pressure": 904.11
+  },
+  {
+    "timestamp": "2025-12-05T17:44:41.125609+04:00",
+    "temperature": 10.59,
+    "pressure": 904.14
+  },
+  {
+    "timestamp": "2025-12-05T17:54:43.938918+04:00",
+    "temperature": 8.9,
+    "pressure": 904.19
+  },
+  {
+    "timestamp": "2025-12-05T18:04:46.546995+04:00",
+    "temperature": 8.76,
+    "pressure": 904.13
+  },
+  {
+    "timestamp": "2025-12-05T18:14:49.149500+04:00",
+    "temperature": 8.35,
+    "pressure": 904.19
+  },
+  {
+    "timestamp": "2025-12-05T18:24:51.605658+04:00",
+    "temperature": 7.14,
+    "pressure": 904.18
+  },
+  {
+    "timestamp": "2025-12-05T18:34:54.292530+04:00",
+    "temperature": 7.31,
+    "pressure": 904.21
+  },
+  {
+    "timestamp": "2025-12-05T18:44:56.814006+04:00",
+    "temperature": 6.95,
+    "pressure": 904.39
+  },
+  {
+    "timestamp": "2025-12-05T18:54:59.379175+04:00",
+    "temperature": 6.67,
+    "pressure": 904.5
+  },
+  {
+    "timestamp": "2025-12-05T19:05:02.035252+04:00",
+    "temperature": 6.54,
+    "pressure": 904.44
+  },
+  {
+    "timestamp": "2025-12-05T19:15:04.521482+04:00",
+    "temperature": 7.23,
+    "pressure": 904.48
+  },
+  {
+    "timestamp": "2025-12-05T19:25:07.947025+04:00",
+    "temperature": 6.99,
+    "pressure": 904.48
+  },
+  {
+    "timestamp": "2025-12-05T19:35:10.573142+04:00",
+    "temperature": 5.97,
+    "pressure": 904.52
+  },
+  {
+    "timestamp": "2025-12-05T19:45:13.145862+04:00",
+    "temperature": 5.87,
+    "pressure": 904.51
+  },
+  {
+    "timestamp": "2025-12-05T19:55:15.638835+04:00",
+    "temperature": 5.81,
+    "pressure": 904.49
+  },
+  {
+    "timestamp": "2025-12-05T20:05:18.763820+04:00",
+    "temperature": 6.09,
+    "pressure": 904.52
+  },
+  {
+    "timestamp": "2025-12-05T20:15:21.261574+04:00",
+    "temperature": 5.63,
+    "pressure": 904.56
+  },
+  {
+    "timestamp": "2025-12-05T20:25:23.685853+04:00",
+    "temperature": 5.24,
+    "pressure": 904.59
+  },
+  {
+    "timestamp": "2025-12-05T20:35:26.266421+04:00",
+    "temperature": 4.45,
+    "pressure": 904.69
+  },
+  {
+    "timestamp": "2025-12-05T20:45:28.875541+04:00",
+    "temperature": 4.7,
+    "pressure": 904.73
+  },
+  {
+    "timestamp": "2025-12-05T20:55:31.402575+04:00",
+    "temperature": 4.76,
+    "pressure": 904.78
+  },
+  {
+    "timestamp": "2025-12-05T21:05:33.989662+04:00",
+    "temperature": 5.11,
+    "pressure": 904.7
+  },
+  {
+    "timestamp": "2025-12-05T21:15:36.637278+04:00",
+    "temperature": 4.5,
+    "pressure": 904.59
+  },
+  {
+    "timestamp": "2025-12-05T21:25:40.509891+04:00",
+    "temperature": 4.22,
+    "pressure": 904.55
+  },
+  {
+    "timestamp": "2025-12-05T21:35:43.045534+04:00",
+    "temperature": 4.36,
+    "pressure": 904.64
+  },
+  {
+    "timestamp": "2025-12-05T21:45:45.524773+04:00",
+    "temperature": 3.52,
+    "pressure": 904.57
+  },
+  {
+    "timestamp": "2025-12-05T21:55:48.330645+04:00",
+    "temperature": 3.45,
+    "pressure": 904.55
+  },
+  {
+    "timestamp": "2025-12-05T22:05:50.867847+04:00",
+    "temperature": 3.29,
+    "pressure": 904.59
+  },
+  {
+    "timestamp": "2025-12-05T22:15:53.475505+04:00",
+    "temperature": 3.79,
+    "pressure": 904.75
+  },
+  {
+    "timestamp": "2025-12-05T22:25:56.104068+04:00",
+    "temperature": 3.38,
+    "pressure": 904.75
+  },
+  {
+    "timestamp": "2025-12-05T22:35:58.745201+04:00",
+    "temperature": 3.53,
+    "pressure": 904.8
+  },
+  {
+    "timestamp": "2025-12-05T22:46:01.218316+04:00",
+    "temperature": 3.49,
+    "pressure": 904.77
+  },
+  {
+    "timestamp": "2025-12-05T22:56:04.488790+04:00",
+    "temperature": 3.44,
+    "pressure": 904.92
+  },
+  {
+    "timestamp": "2025-12-05T23:06:07.022680+04:00",
+    "temperature": 3.55,
+    "pressure": 904.93
+  },
+  {
+    "timestamp": "2025-12-05T23:16:09.570563+04:00",
+    "temperature": 3.13,
+    "pressure": 904.9
+  },
+  {
+    "timestamp": "2025-12-05T23:26:12.950958+04:00",
+    "temperature": 3.37,
+    "pressure": 904.88
+  },
+  {
+    "timestamp": "2025-12-05T23:36:15.485265+04:00",
+    "temperature": 3.33,
+    "pressure": 904.85
+  },
+  {
+    "timestamp": "2025-12-05T23:46:17.941066+04:00",
+    "temperature": 2.92,
+    "pressure": 904.79
+  },
+  {
+    "timestamp": "2025-12-05T23:56:20.449093+04:00",
+    "temperature": 2.51,
+    "pressure": 904.89
+  },
+  {
+    "timestamp": "2025-12-06T00:06:22.877433+04:00",
+    "temperature": 2.58,
+    "pressure": 904.86
+  },
+  {
+    "timestamp": "2025-12-06T00:16:25.330476+04:00",
+    "temperature": 2.55,
+    "pressure": 904.86
+  },
+  {
+    "timestamp": "2025-12-06T00:26:28.588077+04:00",
+    "temperature": 2.71,
+    "pressure": 904.88
+  },
+  {
+    "timestamp": "2025-12-06T00:36:31.042987+04:00",
+    "temperature": 2.67,
+    "pressure": 904.89
+  },
+  {
+    "timestamp": "2025-12-06T16:02:14.973830+04:00",
+    "temperature": 22.33,
+    "pressure": 903.78
+  },
+  {
+    "timestamp": "2025-12-06T16:07:56.791379+04:00",
+    "temperature": 22.3,
+    "pressure": 903.72
+  },
+  {
+    "timestamp": "2025-12-06T16:08:55.005947+04:00",
+    "temperature": 24.01,
+    "pressure": 903.73
+  },
+  {
+    "timestamp": "2025-12-06T16:18:58.033887+04:00",
+    "temperature": 23.37,
+    "pressure": 903.68
+  },
+  {
+    "timestamp": "2025-12-06T16:29:02.419854+04:00",
+    "temperature": 23.76,
+    "pressure": 903.64
+  },
+  {
+    "timestamp": "2025-12-06T17:09:07.433591+04:00",
+    "temperature": 20.63,
+    "pressure": 903.77
+  },
+  {
+    "timestamp": "2025-12-06T17:13:01.112646+04:00",
+    "temperature": 22.34,
+    "pressure": 903.79
+  },
+  {
+    "timestamp": "2025-12-06T17:13:39.335689+04:00",
+    "temperature": 22.49,
+    "pressure": 903.84
+  },
+  {
+    "timestamp": "2025-12-06T17:14:41.604765+04:00",
+    "temperature": 22.77,
+    "pressure": 903.78
+  },
+  {
+    "timestamp": "2025-12-06T17:15:43.481289+04:00",
+    "temperature": 22.93,
+    "pressure": 903.81
+  },
+  {
+    "timestamp": "2025-12-06T17:16:55.241964+04:00",
+    "temperature": 23.31,
+    "pressure": 903.79
+  },
+  {
+    "timestamp": "2025-12-06T17:17:57.161682+04:00",
+    "temperature": 23.44,
+    "pressure": 903.82
+  },
+  {
+    "timestamp": "2025-12-06T17:18:49.824833+04:00",
+    "temperature": 23.44,
+    "pressure": 903.85
+  },
+  {
+    "timestamp": "2025-12-06T17:20:54.989796+04:00",
+    "temperature": 23.43,
+    "pressure": 903.81
+  },
+  {
+    "timestamp": "2025-12-06T17:22:06.263198+04:00",
+    "temperature": 23.59,
+    "pressure": 903.83
+  },
+  {
+    "timestamp": "2025-12-06T17:32:09.114874+04:00",
+    "temperature": 24.22,
+    "pressure": 903.85
+  },
+  {
+    "timestamp": "2025-12-08T15:29:26.382042+04:00",
+    "temperature": 23.96,
+    "pressure": 900.99
+  },
+  {
+    "timestamp": "2025-12-08T15:35:56.426107+04:00",
+    "temperature": 25.62,
+    "pressure": 901.08
+  },
+  {
+    "timestamp": "2025-12-08T15:37:04.766779+04:00",
+    "temperature": 25.86,
+    "pressure": 901.1
+  },
+  {
+    "timestamp": "2025-12-08T15:37:19.517247+04:00",
+    "temperature": 26.11,
+    "pressure": 901.07
+  },
+  {
+    "timestamp": "2025-12-08T15:38:27.963428+04:00",
+    "temperature": 26.6,
+    "pressure": 901.07
+  },
+  {
+    "timestamp": "2025-12-08T15:40:37.247084+04:00",
+    "temperature": 27.14,
+    "pressure": 901.07
+  },
+  {
+    "timestamp": "2025-12-08T15:47:02.088892+04:00",
+    "temperature": 26.99,
+    "pressure": 901.04
+  },
+  {
+    "timestamp": "2025-12-08T15:54:24.139825+04:00",
+    "temperature": 27.57,
+    "pressure": 901.05
+  },
+  {
+    "timestamp": "2025-12-08T15:58:27.165753+04:00",
+    "temperature": 27.63,
+    "pressure": 901.14
+  },
+  {
+    "timestamp": "2025-12-08T16:08:30.671166+04:00",
+    "temperature": 27.72,
+    "pressure": 901.2
+  },
+  {
+    "timestamp": "2025-12-08T16:13:51.499819+04:00",
+    "temperature": 27.41,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:13:55.899196+04:00",
+    "temperature": 27.36,
+    "pressure": 901.19
+  },
+  {
+    "timestamp": "2025-12-08T16:13:59.361890+04:00",
+    "temperature": 27.33,
+    "pressure": 901.2
+  },
+  {
+    "timestamp": "2025-12-08T16:14:02.834862+04:00",
+    "temperature": 27.31,
+    "pressure": 901.22
+  },
+  {
+    "timestamp": "2025-12-08T16:14:06.101859+04:00",
+    "temperature": 27.28,
+    "pressure": 901.18
+  },
+  {
+    "timestamp": "2025-12-08T16:14:09.572491+04:00",
+    "temperature": 27.3,
+    "pressure": 901.22
+  },
+  {
+    "timestamp": "2025-12-08T16:14:13.188351+04:00",
+    "temperature": 27.37,
+    "pressure": 901.21
+  },
+  {
+    "timestamp": "2025-12-08T16:14:16.531260+04:00",
+    "temperature": 27.85,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:14:20.113216+04:00",
+    "temperature": 27.92,
+    "pressure": 901.25
+  },
+  {
+    "timestamp": "2025-12-08T16:14:23.595503+04:00",
+    "temperature": 27.89,
+    "pressure": 901.26
+  },
+  {
+    "timestamp": "2025-12-08T16:14:27.035116+04:00",
+    "temperature": 27.81,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:14:30.465791+04:00",
+    "temperature": 27.77,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:14:33.849247+04:00",
+    "temperature": 27.8,
+    "pressure": 901.18
+  },
+  {
+    "timestamp": "2025-12-08T16:14:37.337461+04:00",
+    "temperature": 27.88,
+    "pressure": 901.25
+  },
+  {
+    "timestamp": "2025-12-08T16:14:40.818740+04:00",
+    "temperature": 27.76,
+    "pressure": 901.26
+  },
+  {
+    "timestamp": "2025-12-08T16:14:44.394415+04:00",
+    "temperature": 28.2,
+    "pressure": 901.21
+  },
+  {
+    "timestamp": "2025-12-08T16:14:47.872105+04:00",
+    "temperature": 28.24,
+    "pressure": 901.3
+  },
+  {
+    "timestamp": "2025-12-08T16:14:51.997442+04:00",
+    "temperature": 28.06,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:14:55.376863+04:00",
+    "temperature": 27.91,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:14:58.749297+04:00",
+    "temperature": 27.85,
+    "pressure": 901.2
+  },
+  {
+    "timestamp": "2025-12-08T16:15:02.096712+04:00",
+    "temperature": 27.82,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:15:05.593116+04:00",
+    "temperature": 27.77,
+    "pressure": 901.22
+  },
+  {
+    "timestamp": "2025-12-08T16:15:08.984625+04:00",
+    "temperature": 27.74,
+    "pressure": 901.21
+  },
+   {
+    "timestamp": "2025-12-08T16:15:12.470104+04:00",
+    "temperature": 27.69,
+    "pressure": 901.2
+  },
+  {
+    "timestamp": "2025-12-08T16:15:15.969379+04:00",
+    "temperature": 27.68,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:15:29.358858+04:00",
+    "temperature": 27.59,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:15:32.937908+04:00",
+    "temperature": 27.54,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:15:36.325774+04:00",
+    "temperature": 27.49,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:15:39.848162+04:00",
+    "temperature": 27.47,
+    "pressure": 901.2
+  },
+  {
+    "timestamp": "2025-12-08T16:15:43.413346+04:00",
+    "temperature": 27.43,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:15:47.055861+04:00",
+    "temperature": 27.43,
+    "pressure": 901.2
+  },
+  {
+    "timestamp": "2025-12-08T16:15:50.559700+04:00",
+    "temperature": 27.4,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:15:54.852970+04:00",
+    "temperature": 27.39,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:15:58.776247+04:00",
+    "temperature": 27.85,
+    "pressure": 901.1
+  },
+  {
+    "timestamp": "2025-12-08T16:16:02.480835+04:00",
+    "temperature": 28.3,
+    "pressure": 901.28
+  },
+  {
+    "timestamp": "2025-12-08T16:16:06.008754+04:00",
+    "temperature": 27.97,
+    "pressure": 901.26
+  },
+  {
+    "timestamp": "2025-12-08T16:16:10.515398+04:00",
+    "temperature": 27.81,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:16:14.541014+04:00",
+    "temperature": 27.78,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:16:18.232002+04:00",
+    "temperature": 28.11,
+    "pressure": 901.25
+  },
+  {
+    "timestamp": "2025-12-08T16:16:23.858810+04:00",
+    "temperature": 28.27,
+    "pressure": 901.27
+  },
+  {
+    "timestamp": "2025-12-08T16:16:27.658125+04:00",
+    "temperature": 28.89,
+    "pressure": 901.27
+  },
+  {
+    "timestamp": "2025-12-08T16:16:31.265826+04:00",
+    "temperature": 28.88,
+    "pressure": 901.31
+  },
+  {
+    "timestamp": "2025-12-08T16:16:35.114537+04:00",
+    "temperature": 28.74,
+    "pressure": 901.27
+  },
+  {
+    "timestamp": "2025-12-08T16:16:38.804036+04:00",
+    "temperature": 29.02,
+    "pressure": 901.29
+  },
+  {
+    "timestamp": "2025-12-08T16:16:42.672618+04:00",
+    "temperature": 29.45,
+    "pressure": 901.31
+  },
+  {
+    "timestamp": "2025-12-08T16:16:46.137142+04:00",
+    "temperature": 29.38,
+    "pressure": 901.33
+  },
+  {
+    "timestamp": "2025-12-08T16:16:50.271290+04:00",
+    "temperature": 29.13,
+    "pressure": 901.33
+  },
+  {
+    "timestamp": "2025-12-08T16:16:56.885841+04:00",
+    "temperature": 29.02,
+    "pressure": 901.27
+  },
+  {
+    "timestamp": "2025-12-08T16:17:00.835594+04:00",
+    "temperature": 28.99,
+    "pressure": 901.29
+  },
+  {
+    "timestamp": "2025-12-08T16:17:04.295613+04:00",
+    "temperature": 28.93,
+    "pressure": 901.27
+  },
+  {
+    "timestamp": "2025-12-08T16:17:07.617284+04:00",
+    "temperature": 28.88,
+    "pressure": 901.26
+  },
+  {
+    "timestamp": "2025-12-08T16:17:11.238602+04:00",
+    "temperature": 28.83,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:17:14.845528+04:00",
+    "temperature": 28.79,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:17:18.406058+04:00",
+    "temperature": 28.78,
+    "pressure": 901.26
+  },
+  {
+    "timestamp": "2025-12-08T16:17:22.408856+04:00",
+    "temperature": 28.76,
+    "pressure": 901.22
+  },
+  {
+    "timestamp": "2025-12-08T16:17:26.186277+04:00",
+    "temperature": 28.79,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:17:29.671049+04:00",
+    "temperature": 28.78,
+    "pressure": 901.25
+  },
+  {
+    "timestamp": "2025-12-08T16:17:33.042711+04:00",
+    "temperature": 28.72,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:17:36.562531+04:00",
+    "temperature": 28.74,
+    "pressure": 901.25
+  },
+  {
+    "timestamp": "2025-12-08T16:17:40.311852+04:00",
+    "temperature": 28.69,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:17:43.790074+04:00",
+    "temperature": 28.65,
+    "pressure": 901.22
+  },
+  {
+    "timestamp": "2025-12-08T16:17:47.490441+04:00",
+    "temperature": 28.64,
+    "pressure": 901.25
+  },
+  {
+    "timestamp": "2025-12-08T16:17:50.987002+04:00",
+    "temperature": 28.62,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:17:54.652672+04:00",
+    "temperature": 28.65,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:17:58.132877+04:00",
+    "temperature": 28.66,
+    "pressure": 901.26
+  },
+  {
+    "timestamp": "2025-12-08T16:18:01.718505+04:00",
+    "temperature": 28.67,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:18:05.314057+04:00",
+    "temperature": 28.63,
+    "pressure": 901.27
+  },
+  {
+    "timestamp": "2025-12-08T16:18:08.785517+04:00",
+    "temperature": 28.62,
+    "pressure": 901.27
+  },
+  {
+    "timestamp": "2025-12-08T16:18:12.268174+04:00",
+    "temperature": 28.64,
+    "pressure": 901.22
+  },
+  {
+    "timestamp": "2025-12-08T16:18:15.639299+04:00",
+    "temperature": 28.64,
+    "pressure": 901.25
+  },
+  {
+    "timestamp": "2025-12-08T16:18:19.323033+04:00",
+    "temperature": 28.65,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:18:23.741265+04:00",
+    "temperature": 28.61,
+    "pressure": 901.25
+  },
+  {
+    "timestamp": "2025-12-08T16:18:27.419487+04:00",
+    "temperature": 28.55,
+    "pressure": 901.22
+  },
+  {
+    "timestamp": "2025-12-08T16:18:31.124190+04:00",
+    "temperature": 28.49,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:18:36.016030+04:00",
+    "temperature": 28.38,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:18:40.015690+04:00",
+    "temperature": 28.29,
+    "pressure": 901.23
+  },
+  {
+    "timestamp": "2025-12-08T16:18:43.502896+04:00",
+    "temperature": 28.23,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:18:47.824661+04:00",
+    "temperature": 28.17,
+    "pressure": 901.24
+  },
+  {
+    "timestamp": "2025-12-08T16:20:10.465372+04:00",
+    "temperature": 27.52,
+    "pressure": 901.25
+  },
+  {
+    "timestamp": "2025-12-08T16:20:21.698085+04:00",
+    "temperature": 27.52,
+    "pressure": 901.27
+  },
+  {
+    "timestamp": "2025-12-08T16:34:58.308572+04:00",
+    "temperature": 27.09,
+    "pressure": 901.3
+  },
+  {
+    "timestamp": "2025-12-08T16:40:52.793725+04:00",
+    "temperature": 26.96,
+    "pressure": 901.35
+  },
+  {
+    "timestamp": "2025-12-08T16:51:58.021710+04:00",
+    "temperature": 26.59,
+    "pressure": 901.38
+  },
+  {
+    "timestamp": "2025-12-08T17:03:18.669351+04:00",
+    "temperature": 27.26,
+    "pressure": 901.47
+  },
+  {
+    "timestamp": "2025-12-08T17:11:02.551795+04:00",
+    "temperature": 27.17,
+    "pressure": 901.54
+  },
+  {
+    "timestamp": "2025-12-08T17:30:51.941586+04:00",
+    "temperature": 26.58,
+    "pressure": 901.69
+  },
+  {
+    "timestamp": "2025-12-08T17:37:22.027746+04:00",
+    "temperature": 26.57,
+    "pressure": 901.7
+  },
+  {
+    "timestamp": "2025-12-08T17:42:18.560071+04:00",
+    "temperature": 26.56,
+    "pressure": 901.74
+  },
+  {
+    "timestamp": "2025-12-08T17:48:57.278377+04:00",
+    "temperature": 26.83,
+    "pressure": 901.77
+  },
+  {
+    "timestamp": "2025-12-08T17:59:01.525785+04:00",
+    "temperature": 26.73,
+    "pressure": 901.86
+  },
+  {
+    "timestamp": "2025-12-08T18:09:02.865096+04:00",
+    "temperature": 25.14,
+    "pressure": 901.45
+  },
+  {
+    "timestamp": "2025-12-08T18:19:04.148676+04:00",
+    "temperature": 14.77,
+    "pressure": 901.39
+  },
+  {
+    "timestamp": "2025-12-08T18:29:05.846791+04:00",
+    "temperature": 11.85,
+    "pressure": 901.41
+  },
+  {
+    "timestamp": "2025-12-08T18:39:09.265065+04:00",
+    "temperature": 10.65,
+    "pressure": 901.52
+  },
+  {
+    "timestamp": "2025-12-08T18:49:12.331682+04:00",
+    "temperature": 10.13,
+    "pressure": 901.56
+  },
+  {
+    "timestamp": "2025-12-08T18:59:14.477461+04:00",
+    "temperature": 9.24,
+    "pressure": 901.49
+  },
+  {
+    "timestamp": "2025-12-08T19:09:15.082118+04:00",
+    "temperature": 8.22,
+    "pressure": 901.73
+  },
+  {
+    "timestamp": "2025-12-08T19:19:16.994333+04:00",
+    "temperature": 8.24,
+    "pressure": 901.66
+  },
+  {
+    "timestamp": "2025-12-08T19:29:20.549103+04:00",
+    "temperature": 8.19,
+    "pressure": 901.71
+  },
+  {
+    "timestamp": "2025-12-08T19:39:23.522012+04:00",
+    "temperature": 7.64,
+    "pressure": 901.77
+  },
+  {
+    "timestamp": "2025-12-08T19:49:26.930057+04:00",
+    "temperature": 7.3,
+    "pressure": 901.82
+  },
+  {
+    "timestamp": "2025-12-08T19:59:29.979124+04:00",
+    "temperature": 7.05,
+    "pressure": 901.83
+  },
+  {
+    "timestamp": "2025-12-08T20:09:32.248841+04:00",
+    "temperature": 6.84,
+    "pressure": 901.83
+  },
+  {
+    "timestamp": "2025-12-08T20:19:35.555351+04:00",
+    "temperature": 6.57,
+    "pressure": 901.79
+  },
+  {
+    "timestamp": "2025-12-08T20:29:38.408936+04:00",
+    "temperature": 6.45,
+    "pressure": 901.86
+  },
+  {
+    "timestamp": "2025-12-08T20:39:41.645149+04:00",
+    "temperature": 6.24,
+    "pressure": 902.01
+  },
+  {
+    "timestamp": "2025-12-08T20:49:44.262924+04:00",
+    "temperature": 6.4,
+    "pressure": 901.97
+  },
+  {
+    "timestamp": "2025-12-08T20:59:48.053084+04:00",
+    "temperature": 6.86,
+    "pressure": 901.94
+  },
+  {
+    "timestamp": "2025-12-08T21:09:51.372281+04:00",
+    "temperature": 7.04,
+    "pressure": 902.12
+  },
+  {
+    "timestamp": "2025-12-08T21:19:53.371386+04:00",
+    "temperature": 7.17,
+    "pressure": 902.1
+  },
+  {
+    "timestamp": "2025-12-08T21:29:55.718509+04:00",
+    "temperature": 7.26,
+    "pressure": 902.12
+  },
+  {
+    "timestamp": "2025-12-08T21:39:59.818704+04:00",
+    "temperature": 7.36,
+    "pressure": 902.12
+  },
+  {
+    "timestamp": "2025-12-08T21:50:02.837224+04:00",
+    "temperature": 7.11,
+    "pressure": 902.22
+  },
+  {
+    "timestamp": "2025-12-08T22:00:06.181597+04:00",
+    "temperature": 7.2,
+    "pressure": 902.25
+  },
+  {
+    "timestamp": "2025-12-08T22:10:09.840559+04:00",
+    "temperature": 7.18,
+    "pressure": 902.14
+  },
+  {
+    "timestamp": "2025-12-08T22:20:13.285768+04:00",
+    "temperature": 6.93,
+    "pressure": 902.14
+  },
+  {
+    "timestamp": "2025-12-08T22:30:14.993570+04:00",
+    "temperature": 6.61,
+    "pressure": 902.17
+  },
+  {
+    "timestamp": "2025-12-08T22:40:18.202661+04:00",
+    "temperature": 6.57,
+    "pressure": 902.08
+  },
+  {
+    "timestamp": "2025-12-08T22:50:22.121874+04:00",
+    "temperature": 6.49,
+    "pressure": 902.12
+  },
+  {
+    "timestamp": "2025-12-08T23:00:25.269995+04:00",
+    "temperature": 6.44,
+    "pressure": 902.12
+  },
+  {
+    "timestamp": "2025-12-08T23:10:28.189339+04:00",
+    "temperature": 6.4,
+    "pressure": 902.02
+  },
+  {
+    "timestamp": "2025-12-08T23:20:31.591078+04:00",
+    "temperature": 6.22,
+    "pressure": 901.98
+  },
+  {
+    "timestamp": "2025-12-08T23:30:34.703421+04:00",
+    "temperature": 6.05,
+    "pressure": 901.96
+  },
+  {
+    "timestamp": "2025-12-08T23:40:38.846583+04:00",
+    "temperature": 6.1,
+    "pressure": 902.02
+  },
+  {
+    "timestamp": "2025-12-08T23:50:42.734919+04:00",
+    "temperature": 6.22,
+    "pressure": 902.0
+  },
+  {
+    "timestamp": "2025-12-09T00:00:44.666353+04:00",
+    "temperature": 6.17,
+    "pressure": 902.0
+  },
+  {
+    "timestamp": "2025-12-09T00:10:48.154192+04:00",
+    "temperature": 5.9,
+    "pressure": 902.06
+  },
+  {
+    "timestamp": "2025-12-09T00:20:51.377216+04:00",
+    "temperature": 5.6,
+    "pressure": 902.08
+  },
+  {
+    "timestamp": "2025-12-09T00:30:53.801419+04:00",
+    "temperature": 5.43,
+    "pressure": 902.09
+  },
+  {
+    "timestamp": "2025-12-09T00:40:57.602446+04:00",
+    "temperature": 5.27,
+    "pressure": 902.17
+  },
+  {
+    "timestamp": "2025-12-09T00:51:01.233710+04:00",
+    "temperature": 5.28,
+    "pressure": 902.2
+  },
+  {
+    "timestamp": "2025-12-09T01:01:04.172454+04:00",
+    "temperature": 5.46,
+    "pressure": 902.26
+  },
+  {
+    "timestamp": "2025-12-09T01:11:07.690623+04:00",
+    "temperature": 5.82,
+    "pressure": 902.24
+  },
+  {
+    "timestamp": "2025-12-09T01:21:11.697115+04:00",
+    "temperature": 6.11,
+    "pressure": 902.33
+  },
+  {
+    "timestamp": "2025-12-09T01:31:17.760238+04:00",
+    "temperature": 6.26,
+    "pressure": 902.25
+  },
+  {
+    "timestamp": "2025-12-09T01:41:22.286027+04:00",
+    "temperature": 6.27,
+    "pressure": 902.28
+  },
+  {
+    "timestamp": "2025-12-09T01:51:25.719183+04:00",
+    "temperature": 6.37,
+    "pressure": 902.2
+  },
+  {
+    "timestamp": "2025-12-09T02:01:29.327114+04:00",
+    "temperature": 6.22,
+    "pressure": 902.07
+  },
+  {
+    "timestamp": "2025-12-09T02:11:32.040740+04:00",
+    "temperature": 6.09,
+    "pressure": 901.96
+  },
+  {
+    "timestamp": "2025-12-09T02:21:35.057166+04:00",
+    "temperature": 5.75,
+    "pressure": 902.04
+  },
+  {
+    "timestamp": "2025-12-09T02:31:44.723724+04:00",
+    "temperature": 5.65,
+    "pressure": 902.0
+  },
+  {
+    "timestamp": "2025-12-09T02:41:47.514217+04:00",
+    "temperature": 5.23,
+    "pressure": 902.09
+  },
+  {
+    "timestamp": "2025-12-09T02:51:51.109690+04:00",
+    "temperature": 5.14,
+    "pressure": 902.08
+  },
+  {
+    "timestamp": "2025-12-09T03:01:57.991244+04:00",
+    "temperature": 4.96,
+    "pressure": 902.25
+  },
+  {
+    "timestamp": "2025-12-09T03:12:01.215537+04:00",
+    "temperature": 4.85,
+    "pressure": 902.26
+  },
+  {
+    "timestamp": "2025-12-09T03:22:02.793941+04:00",
+    "temperature": 5.29,
+    "pressure": 902.21
+  },
+  {
+    "timestamp": "2025-12-09T03:32:06.283923+04:00",
+    "temperature": 5.58,
+    "pressure": 902.22
+  },
+  {
+    "timestamp": "2025-12-09T03:42:09.870906+04:00",
+    "temperature": 5.64,
+    "pressure": 902.26
+  },
+  {
+    "timestamp": "2025-12-09T04:02:21.162925+04:00",
+    "temperature": 5.33,
+    "pressure": 902.18
+  },
+  {
+    "timestamp": "2025-12-09T04:12:27.032727+04:00",
+    "temperature": 5.26,
+    "pressure": 902.16
+  },
+  {
+    "timestamp": "2025-12-09T04:22:29.495462+04:00",
+    "temperature": 5.43,
+    "pressure": 902.26
+  },
+  {
+    "timestamp": "2025-12-09T04:32:33.132223+04:00",
+    "temperature": 5.73,
+    "pressure": 902.3
+  },
+  {
+    "timestamp": "2025-12-09T04:42:40.129346+04:00",
+    "temperature": 5.73,
+    "pressure": 902.23
+  }
+]; 
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update data info
+            document.getElementById('dataPoints').textContent = sensorData.length.toLocaleString();
+            
+            // Get date range
+            const timestamps = sensorData.map(d => new Date(d.timestamp));
+            const minDate = new Date(Math.min(...timestamps));
+            const maxDate = new Date(Math.max(...timestamps));
+            document.getElementById('dateRange').textContent = 
+                `${minDate.toLocaleDateString()} - ${maxDate.toLocaleDateString()}`;
+
+            // Prepare data for charts - include date and time
+            const labels = sensorData.map(d => {
+                const date = new Date(d.timestamp);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + 
+                       ' ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            });
+            const temperatures = sensorData.map(d => d.temperature);
+            const pressures = sensorData.map(d => d.pressure);
+
+            // Chart.js common options
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { family: 'DM Sans', size: 12 },
+                        bodyFont: { family: 'DM Sans', size: 14 },
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Date & Time',
+                            font: { family: 'DM Sans', size: 12 }
+                        },
+                        ticks: {
+                            maxTicksLimit: 8,
+                            font: { family: 'DM Sans', size: 10 }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        display: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            font: { family: 'DM Sans', size: 10 }
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 0,
+                        hoverRadius: 4
+                    },
+                    line: {
+                        tension: 0.3,
+                        borderWidth: 2
+                    }
+                }
+            };
+
+            // Temperature Chart
+            const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+            new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: temperatures,
+                        borderColor: '#e07a5f',
+                        backgroundColor: 'rgba(224, 122, 95, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        y: {
+                            ...commonOptions.scales.y,
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)',
+                                font: { family: 'DM Sans', size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Pressure Chart
+            const pressCtx = document.getElementById('pressureChart').getContext('2d');
+            new Chart(pressCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pressure (hPa)',
+                        data: pressures,
+                        borderColor: '#3d405b',
+                        backgroundColor: 'rgba(61, 64, 91, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        y: {
+                            ...commonOptions.scales.y,
+                            title: {
+                                display: true,
+                                text: 'Pressure (hPa)',
+                                font: { family: 'DM Sans', size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
